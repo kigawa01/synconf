@@ -1,0 +1,81 @@
+#!/bin/bash
+arr=(
+"config command"
+"update command"
+"raid-setting kigawa8390"
+)
+function runScript() {
+  echo run script...
+    chmod 700 "${1}"
+    ${1}
+}
+function run() {
+  echo run...
+    USER="${1}"
+    NAME="${2}"
+    DIR="${USER}/${NAME}"
+
+    if [ ! -d "./${NAME}" ]; then
+      (
+        mkdir "${USER}"
+        cd "${USER}"
+        git clone "https://github.com/${DIR}.git"
+      )
+    fi
+
+    runScript "${DIR}/presetting.bash"
+
+    (
+      cd "${DIR}"
+      git fetch
+      git merge
+      runScript ./setting.bash
+    )
+    exit 0
+}
+function command() {
+  echo command
+  case "${1}" in
+  "config")
+   echo set config...
+    runScript ./presetting.bash
+    runScript ./setting.bash
+    runScript ./copyfile.bash
+    exit 0;;
+  "update")
+    echo update...
+    mv ./intesett ./intesett.old
+    cp ./intesett.old ./intesett
+    git fetch
+    git merge
+    exit 0;;
+  esac
+}
+
+
+if [ $# -eq 1 ]; then
+    for i in "${arr[@]}" ; do
+      data=(${i})
+      NAME="${data[0]}"
+      USER="${data[1]}"
+        if [ "${1}" = "${NAME}" ]; then
+          if [ "${USER}" = "command" ]; then
+              command "${NAME}"
+          else
+          run "${USER}" "${NAME}"
+          fi
+          exit 0
+        fi
+    done
+    STR=(${1//// })
+    if [ "${#STR[@]}" = "2" ]; then
+      run "${1}"
+      exit 0
+    fi
+fi
+
+echo "setting <name> <branch>"
+for i in "${arr[@]}" ; do
+    echo "${i}"
+done
+exit 1
