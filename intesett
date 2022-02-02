@@ -5,13 +5,14 @@ arr=(
 "raid-setting kigawa8390"
 )
 function runScript() {
-    chmod 700 "${0}"
-    ${0}
+  echo run script...
+    chmod 700 "${1}"
+    ${1}
 }
 function run() {
-    STR=(${1//// })
-    USER="${STR[0]}"
-    NAME="${STR[1]}"
+  echo run...
+    USER="${1}"
+    NAME="${2}"
     DIR="${USER}/${NAME}"
 
     if [ ! -d "./${NAME}" ]; then
@@ -33,23 +34,26 @@ function run() {
     exit 0
 }
 function command() {
+  echo command
   case "${1}" in
   "config")
+   echo set config...
     runScript ./presetting.bash
     runScript ./setting.bash
     runScript ./copyfile.bash
     exit 0;;
   "update")
-    mv ./intesett ./intesett.log
-    cp ./intsett.old ./intesett
+    echo update...
+    mv ./intesett ./intesett.old
+    cp ./intesett.old ./intesett
     git fetch
     git merge
-    exit0;;
+    exit 0;;
   esac
 }
 
 
-if [ $# -eq 2 ]; then
+if [ $# -eq 1 ]; then
     for i in "${arr[@]}" ; do
       data=(${i})
       NAME="${data[0]}"
@@ -57,12 +61,19 @@ if [ $# -eq 2 ]; then
         if [ "${1}" = "${NAME}" ]; then
           if [ "${USER}" = "command" ]; then
               command "${NAME}"
+          else
+          run "${USER}" "${NAME}"
           fi
-          run "${USER}/${NAME}"
+          exit 0
         fi
     done
-    run "${1}"
+    STR=(${1//// })
+    if [ "${#STR[@]}" = "2" ]; then
+      run "${1}"
+      exit 0
+    fi
 fi
+
 echo "setting <name> <branch>"
 for i in "${arr[@]}" ; do
     echo "${i}"
