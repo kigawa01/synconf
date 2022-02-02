@@ -7,6 +7,13 @@ URLS=(
 "https://github.com/kigawa8390/raid-setting.git"
 )
 
+function commands() {
+  echo setting command branch
+    for i in {0..$((${#NAMES[@]}-1))};do
+      echo NAMES[i]
+    done
+}
+
 function yn() {
   if [ $# -eq 1 ]; then
 
@@ -35,8 +42,19 @@ function var() {
   echo $r
 }
 
-echo type branch
-BRANCH=$(var *)
+if [ $# -eq 0 ]; then
+    commands
+    exit 1
+fi
+if [ $# -eq 1 ]; then
+  echo type branch
+  BRANCH=$(var *)
+elif [ $# -eq 2 ]; then
+    BRANCH="$1"
+else
+  commands
+  exit 1
+fi
 
 for i in {0..$((${#NAMES[@]}-1))};do
   NAME="${NAMES[i]}"
@@ -49,6 +67,7 @@ for i in {0..$((${#NAMES[@]}-1))};do
     (
     cd "${NAME}"
     git fetch
+    git checkout "${BRANCH}"
     git merge
     chmod 700 ./setting.bash
     ./setting.bash
