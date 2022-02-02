@@ -4,10 +4,22 @@ arr=(
 "update command"
 "raid-setting kigawa8390"
 )
+SCRIPT=$(pwd)
 function runScript() {
   echo run script...
     chmod 700 "${1}"
     ${1}
+}
+function depend() {
+  while read line; do
+    ./intesett ${line}
+  done < "${1}/depend.conf"
+}
+function defaultConfig() {
+
+}
+function saveConfig() {
+
 }
 function run() {
   echo run...
@@ -23,7 +35,8 @@ function run() {
       )
     fi
 
-    runScript "${DIR}/beforeSetting.bash"
+    depend "${DIR}"
+    defaultConfig
 
     (
       cd "${DIR}"
@@ -31,16 +44,19 @@ function run() {
       git merge
       runScript ./setting.bash
     )
+
+      saveConfig
     exit 0
 }
 function command() {
   echo command
   case "${1}" in
   "config")
-   echo set config...
-    runScript ./beforeSetting.bash
+    echo set config...
+    depend .
+    defaultConfig
     runScript ./setting.bash
-    runScript ./afterSetting.bash
+    saveConfig
     exit 0;;
   "update")
     echo update...
