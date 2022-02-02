@@ -1,1 +1,1 @@
-# server-setting
+# interactive-setting
