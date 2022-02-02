@@ -1,0 +1,70 @@
+#!/bin/bash
+arr=(
+"config command"
+"update command"
+"raid-setting kigawa8390"
+)
+function runScript() {
+    chmod 700 "${0}"
+    ${0}
+}
+function run() {
+    STR=(${1//// })
+    USER="${STR[0]}"
+    NAME="${STR[1]}"
+    DIR="${USER}/${NAME}"
+
+    if [ ! -d "./${NAME}" ]; then
+      (
+        mkdir "${USER}"
+        cd "${USER}"
+        git clone "https://github.com/${DIR}.git"
+      )
+    fi
+
+    runScript "${DIR}/presetting.bash"
+
+    (
+      cd "${DIR}"
+      git fetch
+      git merge
+      runScript ./setting.bash
+    )
+    exit 0
+}
+function command() {
+  case "${1}" in
+  "config")
+    runScript ./presetting.bash
+    runScript ./setting.bash
+    runScript ./copyfile.bash
+    exit 0;;
+  "update")
+    mv ./intesett ./intesett.log
+    cp ./intsett.old ./intesett
+    git fetch
+    git merge
+    exit0;;
+  esac
+}
+
+
+if [ $# -eq 2 ]; then
+    for i in "${arr[@]}" ; do
+      data=(${i})
+      NAME="${data[0]}"
+      USER="${data[1]}"
+        if [ "${1}" = "${NAME}" ]; then
+          if [ "${USER}" = "command" ]; then
+              command "${NAME}"
+          fi
+          run "${USER}/${NAME}"
+        fi
+    done
+    run "${1}"
+fi
+echo "setting <name> <branch>"
+for i in "${arr[@]}" ; do
+    echo "${i}"
+done
+exit 1
