@@ -23,7 +23,7 @@ function run() {
       )
     fi
 
-    runScript "${DIR}/presetting.bash"
+    runScript "${DIR}/beforeSetting.bash"
 
     (
       cd "${DIR}"
@@ -38,9 +38,9 @@ function command() {
   case "${1}" in
   "config")
    echo set config...
-    runScript ./presetting.bash
+    runScript ./beforeSetting.bash
     runScript ./setting.bash
-    runScript ./copyfile.bash
+    runScript ./afterSetting.bash
     exit 0;;
   "update")
     echo update...
