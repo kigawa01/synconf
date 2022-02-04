@@ -16,7 +16,9 @@ function depend() {
   done < "${1}/depend.conf"
 }
 function defaultConfig() {
-
+  while read line; do
+    a
+  done < "${1}/files.conf"
 }
 function saveConfig() {
 
