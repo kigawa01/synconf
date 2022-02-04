@@ -1,3 +1,5 @@
 # intesett
 
-a interactive-setting
+* a interactive-setting
+* sync config
+* install soft
