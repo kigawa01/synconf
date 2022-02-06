@@ -1,0 +1,17 @@
+#!/bin/bash
+CMD=()
+for i  ; do
+    if [ "${i:0:1}" = "-" ]; then
+        continue
+    fi
+    CMD+=("${i}")
+done
+
+case "${CMD[0]}" in
+ "update")
+ mv ./synconf ./synconf.old
+ cp ./synconf.old ./synconf
+ git fetch
+ git merge
+ exit 0;;
+esac
