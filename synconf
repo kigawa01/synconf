@@ -28,7 +28,7 @@ for i  ; do
 
 done
 
-case "${CMD]}" in
+case "${CMD}" in
   "help")
     help
     exit 0;;
@@ -40,6 +40,7 @@ case "${CMD]}" in
     exit 0;;
   *)
     if [ ! -f "cmd/${CMD}" ]; then
+      help
       exit 1
     fi
     "cmd/${CMD}" "${SUB[@]}"
