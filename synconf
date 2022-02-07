@@ -39,6 +39,7 @@ case "${CMD}" in
       git fetch
       git merge
     else
+      rm -rf ./*
       git clone https://github.com/kigawa8390/synconf.git --bare --progress ./
     fi
     exit 0;;
