@@ -33,7 +33,7 @@ case "${CMD}" in
     help
     exit 0;;
   "update")
-    if [ "${#SUB[0]}" = "" ]; then
+    if [ "${SUB[0]}" = "" ]; then
       if [ ! -d ./.git ]; then
         cd ..
         rm -rf ./synconf
