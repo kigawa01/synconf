@@ -33,14 +33,17 @@ case "${CMD}" in
     help
     exit 0;;
   "update")
-    if [ -d ./.git ]; then
+    if [ "${#SUB[0]}" = "" ]; then
+      if [ ! -d ./.git ]; then
+        cd ..
+        rm -rf ./synconf
+        git clone https://github.com/kigawa8390/synconf.git --progress --single-branch ./synconf
+        exit 0
+      fi
       mv ./synconf ./synconf.old
       cp ./synconf.old ./synconf
       git fetch
       git merge
-    else
-      rm -rf ./
-      git clone https://github.com/kigawa8390/synconf.git --bare --progress ./
     fi
     exit 0;;
   *)
