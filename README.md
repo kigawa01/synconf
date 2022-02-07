@@ -27,6 +27,10 @@
     * **dev**: プラグインのバージョン バグがあるかもしれない(dev)/致命的なバグがないと思われる(b)/バグはないと思われる(R)
 
 ## ToDo
-
+* [ ] self-config
+* [ ] git config
+* [ ] auto update
+* [ ] install
+* [ ] remove
 
 ## ChangeLog
