@@ -57,11 +57,14 @@ case "${CMD}" in
     exit 0;;
   "update")
     getCMD "${SUB[@]}"
+    opt=(
+    "--clone"
+    )
     if [ "${CMD}" = "" ]; then
       if [ ! -d ./.git ]; then
         cd ..
         rm -rf ./synconf
-        git clone https://github.com/kigawa8390/synconf.git --progress --single-branch ./synconf
+        git clone https://github.com/kigawa8390/synconf.git --progress --single-branch ./synconf "${SUB}"
         exit 0
       fi
       mv ./synconf ./synconf.old
