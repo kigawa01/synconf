@@ -3,21 +3,30 @@ subcommands=(
 "help"
 "update"
 )
+opt=(
+
+)
 function help() {
     echo subcommands
     for i in "${subcommands[@]}" ; do
-        echo ">${i}"
+        echo "> ${i}"
     done
     for i in ls "cmd" ; do
-      echo ">${i}"
+      echo "> ${i}"
+    done
+    echo options
+    for i in "${opt[@]}" ; do
+        echo "> ${i}"
     done
 }
-
-CMD=""
-SUB=()
-for i  ; do
+function getCMD() {
+  CMD=""
+  SUB=()
+  OPT=()
+  for i  ; do
     if [ "${CMD}" = "" ]; then
       if [ "${i:0:1}" = "-" ]; then
+        OPT+=("${i}")
         continue
       fi
       CMD="${i}"
@@ -25,15 +34,30 @@ for i  ; do
     else
       SUB+=("${i}")
     fi
+  done
+}
+function checkOpt() {
+    for i in "${OPT[@]}" ; do
+        if  bin/array contain "${i}" "${opt[@]}" ; then
+          continue
+        else
+          help
+          echo "opt is not exist"
+          exit 1
+        fi
+    done
+}
 
-done
+getCMD "${@}"
+checkOpt
 
 case "${CMD}" in
   "help")
     help
     exit 0;;
   "update")
-    if [ "${SUB[0]}" = "" ]; then
+    getCMD "${SUB[@]}"
+    if [ "${CMD}" = "" ]; then
       if [ ! -d ./.git ]; then
         cd ..
         rm -rf ./synconf
@@ -49,6 +73,7 @@ case "${CMD}" in
   *)
     if [ ! -f "cmd/${CMD}" ]; then
       help
+      echo "command is not exist"
       exit 1
     fi
     "cmd/${CMD}" "${SUB[@]}"
