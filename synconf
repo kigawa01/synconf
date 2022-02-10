@@ -64,14 +64,17 @@ case "${CMD}" in
       if [ ! -d ./.git ]; then
         cd ..
         rm -rf ./synconf
-        git clone https://github.com/kigawa8390/synconf.git --progress --single-branch ./synconf "${SUB}"
+        git clone https://github.com/kigawa8390/synconf.git --progress --single-branch ./synconf "${SUB[@]}"
         exit 0
       fi
       mv ./synconf ./synconf.old
       cp ./synconf.old ./synconf
       git fetch
       git merge
+      exist 0
     fi
+    help
+    exist update is missed
     exit 0;;
   *)
     if [ ! -f "cmd/${CMD}" ]; then
