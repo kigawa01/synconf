@@ -67,9 +67,9 @@ case "${CMD}" in
   getCMD "${SUB[@]}"
   checkOpt
   if [ "${CMD}" = "" ]; then
-    if [ ! -d ./.git ] || bin/array contain "--clone" "${OPT[@]}"; then
+    if [ ! -d ./.git ] || ! bin/array contain "--clone" "${OPT[@]}"; then
       gitOpt=()
-      if bin/array contain "--dev" "${OPT[@]}"; then
+      if ! bin/array contain "--dev" "${OPT[@]}"; then
         gitOpt=(
           "-b dev"
         )
