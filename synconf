@@ -62,7 +62,7 @@ case "${CMD}" in
     getCMD "${SUB[@]}"
     checkOpt
     if [ "${CMD}" = "" ]; then
-      if [ ! -d ./.git ]; then
+      if [ ! -d ./.git ] || bin/array contain "--clone" "${OPT[@]}" ; then
         cd ..
         rm -rf ./synconf
         git clone https://github.com/kigawa8390/synconf.git --progress --single-branch ./synconf "${SUB[@]}"
