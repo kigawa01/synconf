@@ -72,7 +72,7 @@ case "${CMD}" in
       cp ./synconf.old ./synconf
       git fetch
       git merge
-      exist 0
+      exit 0
     fi
     help
     echo "update is missed ${CMD} is not exist"
