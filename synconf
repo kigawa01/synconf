@@ -66,6 +66,7 @@ case "${CMD}" in
         cd ..
         rm -rf ./synconf
         git clone https://github.com/kigawa8390/synconf.git --progress --single-branch ./synconf "${SUB[@]}"
+        cd ./synconf || exit
         exit 0
       fi
       mv ./synconf ./synconf.old
