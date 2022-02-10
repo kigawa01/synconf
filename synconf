@@ -61,7 +61,7 @@ case "${CMD}" in
     )
     getCMD "${SUB[@]}"
     checkOpt
-    if [ "${CMD}" = "" ]; then
+    if [ "${CMD}" = "" ] || [ "${CMD}" = "opt" ]; then
       if [ ! -d ./.git ] || bin/array contain "--clone" "${OPT[@]}" ; then
         cd ..
         rm -rf ./synconf
@@ -76,6 +76,8 @@ case "${CMD}" in
       exit 0
     fi
     help
+    echo "subcommands"
+    echo "> opt"
     echo "update is missed ${CMD} is not exist"
     exit 0;;
   *)
