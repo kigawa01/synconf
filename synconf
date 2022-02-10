@@ -56,10 +56,11 @@ case "${CMD}" in
     help
     exit 0;;
   "update")
-    getCMD "${SUB[@]}"
     opt=(
     "--clone"
     )
+    getCMD "${SUB[@]}"
+    checkOpt
     if [ "${CMD}" = "" ]; then
       if [ ! -d ./.git ]; then
         cd ..
@@ -74,7 +75,7 @@ case "${CMD}" in
       exist 0
     fi
     help
-    exist update is missed
+    echo "update is missed ${CMd} is not exist"
     exit 0;;
   *)
     if [ ! -f "cmd/${CMD}" ]; then
