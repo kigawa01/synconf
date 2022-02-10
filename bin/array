@@ -24,6 +24,7 @@ case "${CMD}" in
   for i in "${SUB[@]}" ; do
       if [ "${SRC}" = "" ]; then
         SRC="${i}"
+        continue
       fi
       if [ "${SRC}" = "${i}" ]; then
         echo "true"
