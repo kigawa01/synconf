@@ -42,7 +42,7 @@ function checkOpt() {
           continue
         else
           help
-          echo "opt is not exist"
+          echo "${i} opt is not exist"
           exit 1
         fi
     done
