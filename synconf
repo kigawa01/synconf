@@ -56,16 +56,26 @@ case "${CMD}" in
     help
     exit 0;;
   "update")
+    subcommands=(
+    "opt"
+    )
     opt=(
     "--clone"
+    "--dev"
     )
     getCMD "${SUB[@]}"
     checkOpt
-    if [ "${CMD}" = "" ] || [ "${CMD}" = "opt" ]; then
+    if [ "${CMD}" = "" ] ; then
       if [ ! -d ./.git ] || bin/array contain "--clone" "${OPT[@]}" ; then
+        if bin/array contain "--dev" "${OPT[@]}" ; then
+            gitOpt=(
+            "-b dev"
+            )
+        fi
+
         cd ..
         rm -rf ./synconf
-        git clone https://github.com/kigawa8390/synconf.git --progress --single-branch ./synconf "${SUB[@]}"
+        git clone https://github.com/kigawa8390/synconf.git --progress --single-branch ./synconf "${gitOpt[@]}"
         cd ./synconf || exit
         exit 0
       fi
@@ -76,9 +86,7 @@ case "${CMD}" in
       exit 0
     fi
     help
-    echo "subcommands"
-    echo "> opt"
-    echo "update is missed ${CMD} is not exist"
+    echo "${CMD} is not exist"
     exit 0;;
   *)
     if [ ! -f "cmd/${CMD}" ]; then
