@@ -3,21 +3,30 @@ subcommands=(
 "help"
 "update"
 )
+opt=(
+
+)
 function help() {
     echo subcommands
     for i in "${subcommands[@]}" ; do
-        echo ">${i}"
+        echo "> ${i}"
     done
     for i in ls "cmd" ; do
-      echo ">${i}"
+      echo "> ${i}"
+    done
+    echo options
+    for i in "${opt[@]}" ; do
+        echo "> ${i}"
     done
 }
-
-CMD=""
-SUB=()
-for i  ; do
+function getCMD() {
+  CMD=""
+  SUB=()
+  OPT=()
+  for i  ; do
     if [ "${CMD}" = "" ]; then
       if [ "${i:0:1}" = "-" ]; then
+        OPT+=("${i}")
         continue
       fi
       CMD="${i}"
@@ -25,30 +34,64 @@ for i  ; do
     else
       SUB+=("${i}")
     fi
+  done
+}
+function checkOpt() {
+    for i in "${OPT[@]}" ; do
+        if  bin/array contain "${i}" "${opt[@]}" ; then
+          continue
+        else
+          help
+          echo "${i} opt is not exist"
+          exit 1
+        fi
+    done
+}
 
-done
+getCMD "${@}"
+checkOpt
 
 case "${CMD}" in
   "help")
     help
     exit 0;;
   "update")
-    if [ "${#SUB[0]}" = "" ]; then
-      if [ ! -d ./.git ]; then
+    subcommands=(
+    "opt"
+    )
+    opt=(
+    "--clone"
+    "--dev"
+    )
+    getCMD "${SUB[@]}"
+    checkOpt
+    if [ "${CMD}" = "" ] ; then
+      if [ ! -d ./.git ] || bin/array contain "--clone" "${OPT[@]}" ; then
+        if bin/array contain "--dev" "${OPT[@]}" ; then
+            gitOpt=(
+            "-b dev"
+            )
+        fi
+
         cd ..
         rm -rf ./synconf
-        git clone https://github.com/kigawa8390/synconf.git --progress --single-branch ./synconf
+        git clone https://github.com/kigawa8390/synconf.git --progress --single-branch ./synconf "${gitOpt[@]}"
+        cd ./synconf || exit
         exit 0
       fi
       mv ./synconf ./synconf.old
       cp ./synconf.old ./synconf
       git fetch
       git merge
+      exit 0
     fi
+    help
+    echo "${CMD} is not exist"
     exit 0;;
   *)
     if [ ! -f "cmd/${CMD}" ]; then
       help
+      echo "command is not exist"
       exit 1
     fi
     "cmd/${CMD}" "${SUB[@]}"

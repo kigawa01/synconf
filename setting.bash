@@ -1,2 +1,3 @@
 #!/bin/bash
-echo "${SCRIPT}"
+echo "setting synconf..."
+SETTING=()

@@ -1,0 +1,18 @@
+#!/bin/bash
+function getCMD() {
+  CMD=""
+  SUB=()
+  OPT=()
+  for i  ; do
+    if [ "${CMD}" = "" ]; then
+      if [ "${i:0:1}" = "-" ]; then
+        OPT+=("${i}")
+        continue
+      fi
+      CMD="${i}"
+      continue
+    else
+      SUB+=("${i}")
+    fi
+  done
+}
