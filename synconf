@@ -75,7 +75,7 @@ case "${CMD}" in
       exist 0
     fi
     help
-    echo "update is missed ${CMd} is not exist"
+    echo "update is missed ${CMD} is not exist"
     exit 0;;
   *)
     if [ ! -f "cmd/${CMD}" ]; then
