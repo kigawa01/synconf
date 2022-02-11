@@ -47,7 +47,9 @@ function checkOpt() {
   done
 }
 function setting() {
-    DIR="${1}"
+  DIR="${1}"
+  bin/depend install "${DIR}/depend.conf"
+  bin/configs set "${DIR}/configs.conf"
 
 }
 
@@ -56,7 +58,7 @@ checkOpt
 
 case "${CMD}" in
 "synconf")
-
+  setting "."
   ;;
 
 esac
