@@ -27,11 +27,11 @@ case "${CMD}" in
         continue
       fi
       if [ "${SRC}" = "${i}" ]; then
-        echo "true"
+        #echo "true"
           exit 0
       fi
   done
-  echo "false"
+  #echo "false"
   exit 1
   ;;
 esac
