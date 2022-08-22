@@ -7,6 +7,7 @@ use crate::install::command_install;
 
 mod install;
 mod errors;
+mod config;
 
 static COMMANDS: Lazy<HashMap<&str, Command>> = Lazy::new(|| {
     let mut commands: HashMap<&str, Command> = HashMap::new();

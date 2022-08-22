@@ -18,6 +18,10 @@ pub fn command_install() {
 }
 
 
+fn create_local_config() {
+
+}
+
 #[cfg(target_os = "linux")]
 fn copy_os_binary() -> Result<(), Error> {
     return copy_binary("/usr/local/bin/synconf");

@@ -9,7 +9,7 @@ pub struct Error {
 pub struct PrintErr;
 
 impl PrintErr {
-    pub fn from_messages_errors(messages: Vec<String>, errors: Vec<Box<dyn error::Error>>) -> Result<(), Error>
+    pub fn from_messages_errors<T>(messages: Vec<String>, errors: Vec<Box<dyn error::Error>>) -> Result<T, Error>
     {
         for i in 0..messages.len() {
             print_error(messages[i].as_str());
@@ -19,7 +19,7 @@ impl PrintErr {
         }
         Err(Error::from_messages_errors(messages, errors))
     }
-    pub fn from_message_error(message: &str, error: Box<dyn error::Error>) -> Result<(), Error>
+    pub fn from_message_error<T>(message: &str, error: Box<dyn error::Error>) -> Result<T, Error>
     {
         let mut messages = Vec::new();
         let mut errors = Vec::new();
@@ -27,7 +27,7 @@ impl PrintErr {
         errors.push(error);
         return PrintErr::from_messages_errors(messages, errors);
     }
-    pub fn from_message(message: &str) -> Result<(), Error> {
+    pub fn from_message<T>(message: &str) -> Result<T, Error> {
         let mut messages = Vec::new();
         let errors = Vec::new();
         messages.push(message.to_string());
