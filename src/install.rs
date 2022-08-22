@@ -41,6 +41,11 @@ fn copy_binary(to_path_str: &str) -> Result<(), Error> {
 
     let to_path = PathBuf::from(to_path_str);
 
+    if from_path == to_path {
+        println!("pass is the same");
+        return Ok(());
+    }
+
     match copy(from_path.as_path(), to_path.as_path()) {
         Ok(_) => {}
         Err(err) => {
