@@ -1,12 +1,12 @@
 use std::collections::HashMap;
 use std::env;
-use std::io::Error;
 
 use once_cell::sync::Lazy;
 
 use crate::install::command_install;
 
 mod install;
+mod errors;
 
 static COMMANDS: Lazy<HashMap<&str, Command>> = Lazy::new(|| {
     let mut commands: HashMap<&str, Command> = HashMap::new();
@@ -54,10 +54,4 @@ fn command_help() {
     }
     println!("> -----------------");
     return;
-}
-
-pub fn print_error(error: Error, message: &str) -> Result<(), Error> {
-    println!("Error: {}", message);
-    println!("Error: {}", error);
-    return Err(error);
 }
