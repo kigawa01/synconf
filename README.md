@@ -1,4 +1,5 @@
 # synconf
+
 ## Requirement
 
 * ubuntu
@@ -9,12 +10,18 @@
     * kigawa.8390@gmail.com
 
 ## About
+
 * sync config github
 * install soft
 * interactive-setting
 
-
 # Making
+
+## Build
+
+```bash
+cargo build --target x86_64-unknown-linux-gnu
+```
 
 ## Version
 
@@ -23,8 +30,9 @@
 * **9.1**
     * **9**: メジャー
     * **1**: マイナー
-   
+
 ## ToDo
+
 * [ ] self-config
 * [ ] git config
 * [ ] auto update

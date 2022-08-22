@@ -1,12 +1,26 @@
 use std::collections::HashMap;
 use std::env;
+use std::io::Error;
 
 use once_cell::sync::Lazy;
 
+use crate::install::command_install;
+
+mod install;
+
 static COMMANDS: Lazy<HashMap<&str, Command>> = Lazy::new(|| {
     let mut commands: HashMap<&str, Command> = HashMap::new();
-    commands.insert("help", Command { name: "help", func: command_help, description: "show help" });
-    commands
+    commands.insert("help", Command {
+        name: "help",
+        func: command_help,
+        description: "show help",
+    });
+    commands.insert("install", Command {
+        name: "install",
+        func: command_install,
+        description: "install synconf",
+    });
+    return commands;
 });
 
 struct Command {
@@ -34,10 +48,16 @@ fn main() {
 }
 
 fn command_help() {
-    println!("__commands list__");
+    println!("> --commands list--");
     for command in COMMANDS.values() {
-        println!("> {}:   {}", command.name, command.description)
+        println!("> {0: <15}: {1}", command.name, command.description)
     }
-    println!("-----------------");
+    println!("> -----------------");
     return;
+}
+
+pub fn print_error(error: Error, message: &str) -> Result<(), Error> {
+    println!("Error: {}", message);
+    println!("Error: {}", error);
+    return Err(error);
 }
