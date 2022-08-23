@@ -36,6 +36,7 @@
         </developer>
     </developers>
 
+
     <build>
         <finalName>${name}</finalName>
     </build>
