@@ -1,11 +1,16 @@
-package net.kigawa.synconf;
+package net.kigawa.synconf.util;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class OS_Util
+public class OsUtil
 {
     public static final String OS_NAME = System.getProperty("os.name");
+
+    public static String createBinaryFilename(String command)
+    {
+        return getOs().binaryFilenameCreator.create(command);
+    }
 
     public static Path getVariablePath()
     {
@@ -25,20 +30,27 @@ public class OS_Util
 
     public enum OsType
     {
-        Windows("windows"),
-        Linux("linux"),
+        Windows("windows", command -> command + ".exe"),
+        Linux("linux", command -> command),
         ;
 
-        private final String name;
+        public final String name;
+        public final BinaryFilenameCreator binaryFilenameCreator;
 
-        OsType(String name)
+        OsType(String name, BinaryFilenameCreator binaryFilenameCreator)
         {
             this.name = name;
+            this.binaryFilenameCreator = binaryFilenameCreator;
         }
 
         public boolean isMatch(String name)
         {
             return this.name.toLowerCase().contains(name.toLowerCase());
         }
+    }
+
+    public interface BinaryFilenameCreator
+    {
+        String create(String command);
     }
 }
