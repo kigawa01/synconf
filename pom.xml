@@ -26,16 +26,15 @@
         </license>
     </licenses>
 
-    <developers>tesdt
-        <developer>
-            <id>net.kigawa</id>
-            <name>kigawa</name>
-            <email>kigawa.8390@gmail.com</email>
-            <organization>individual</organization>
-            <organizationUrl>https://github.com/kigawa01/</organizationUrl>
-        </developer>
-    </developers>
-
+<!--    <developers>-->
+<!--        <developer>-->
+<!--            <id>net.kigawa</id>-->
+<!--            <name>kigawa</name>-->
+<!--            <email>kigawa.8390@gmail.com</email>-->
+<!--            <organization>individual</organization>-->
+<!--            <organizationUrl>https://github.com/kigawa01/</organizationUrl>-->
+<!--        </developer>-->
+<!--    </developers>-->
 
     <build>
         <finalName>${name}</finalName>
