@@ -9,6 +9,10 @@
         <description>sync config to git</description>
         <url>https://github.com/kigawa01/synconf</url>
         <version>1.0</version>
+
+
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
 
     <name>${name}</name>
@@ -35,6 +39,14 @@
             <organizationUrl>https://github.com/kigawa01/</organizationUrl>
         </developer>
     </developers>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.30</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <finalName>${name}</finalName>
