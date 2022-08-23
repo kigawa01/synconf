@@ -46,6 +46,11 @@
             <artifactId>snakeyaml</artifactId>
             <version>1.30</version>
         </dependency>
+        <dependency>
+            <groupId>net.kigawa.kutil</groupId>
+            <artifactId>kutil</artifactId>
+            <version>2.1</version>
+        </dependency>
     </dependencies>
 
     <build>
