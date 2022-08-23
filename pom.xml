@@ -26,7 +26,8 @@
         </license>
     </licenses>
 
-    <developers>tesdt
+    <developers>
+
         <developer>
             <id>net.kigawa</id>
             <name>kigawa</name>
