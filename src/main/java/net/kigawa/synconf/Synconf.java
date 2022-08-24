@@ -1,8 +1,13 @@
 package net.kigawa.synconf;
 
+import net.kigawa.kutil.kutil.KutilFile;
 import net.kigawa.synconf.util.CommandUtil;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class Synconf
 {
@@ -17,16 +22,33 @@ public class Synconf
     public void sync() throws Exception
     {
         if (!CommandUtil.isCommandExist("git")) throw new Exception("command not found");
-        var resultList = CommandUtil.execCommand("git", "add", "-u");
+        CommandUtil.execCommand("git", "add", "-u");
+        CommandUtil.execCommand("git", "commit", "-m", "update");
+        CommandUtil.execCommand("git", "fetch");
+        CommandUtil.execCommand("git", "marge");
+        CommandUtil.execCommand("git", "checkout", "--ours");
+        CommandUtil.execCommand("git", "add", "-u");
+        CommandUtil.execCommand("git", "commit", "-m", "marge");
     }
 
-    public void reflectToRepo()
+    public void setupSymbolicLink1() throws IOException
     {
+        try {
+            var hostname = InetAddress.getLocalHost().getHostName();
+            var config = Config.loadConfig(Path.of("hosts", hostname));
 
-    }
+            var reposFolder = KutilFile.getRelativeFile("configs");
+            for (var paths : config.repoPathToAbsolutePath().entrySet()) {
+                var absoluteFile = KutilFile.getRelativeFile(paths.getValue());
+                if (absoluteFile.exists()) continue;
 
-    public void reflectToAbsolut(){
+                var repoFile = KutilFile.getFile(reposFolder, paths.getKey());
 
+                Files.createSymbolicLink(repoFile.toPath(), absoluteFile.toPath());
+            }
+        } catch (UnknownHostException e) {
+            throw new IOException(e);
+        }
     }
 
     public static Synconf getInstance()
