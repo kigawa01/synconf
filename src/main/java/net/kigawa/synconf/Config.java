@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-public record Config(Map<String, String> confPathToAbsolutePath)
+public record Config(Map<String, String> repoPathToAbsolutePath)
 {
     public Config()
     {

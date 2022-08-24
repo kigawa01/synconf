@@ -17,6 +17,16 @@ public class Synconf
     public void sync() throws Exception
     {
         if (!CommandUtil.isCommandExist("git")) throw new Exception("command not found");
+        var resultList = CommandUtil.execCommand("git", "add", "-u");
+    }
+
+    public void reflectToRepo()
+    {
+
+    }
+
+    public void reflectToAbsolut(){
+
     }
 
     public static Synconf getInstance()
@@ -26,6 +36,10 @@ public class Synconf
 
     public static void main(String[] args)
     {
-        synconf = new Synconf();
+        try {
+            synconf = new Synconf();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
