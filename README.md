@@ -11,7 +11,7 @@
 
 ## About
 
-* sync config github
+* sync hostConfig github
 * install soft
 * interactive-setting
 
@@ -33,8 +33,8 @@ cargo build --target x86_64-unknown-linux-gnu
 
 ## ToDo
 
-* [ ] self-config
-* [ ] git config
+* [ ] self-hostConfig
+* [ ] git hostConfig
 * [ ] auto update
 * [ ] install
 * [ ] remove
