@@ -20,6 +20,11 @@ public class OsUtil
         };
     }
 
+    public static Path getLogPath()
+    {
+        return PathUtil.appendPath(getVariablePath(), "log");
+    }
+
     public static OsType getOs()
     {
         for (var osType : OsType.values()) {

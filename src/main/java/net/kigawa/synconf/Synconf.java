@@ -1,37 +1,65 @@
 package net.kigawa.synconf;
 
 import net.kigawa.kutil.kutil.KutilFile;
+import net.kigawa.kutil.log.log.KLogger;
 import net.kigawa.synconf.config.Config;
 import net.kigawa.synconf.config.Configs;
 import net.kigawa.synconf.config.HostConfig;
 import net.kigawa.synconf.util.CommandUtil;
+import net.kigawa.synconf.util.OsUtil;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 public class Synconf
 {
     private static final String PROJECT_NAME = "synconf";
     private static Synconf synconf;
+    public final ExecutorService executorService;
+    public final Config config;
+    public final KLogger logger;
+    private boolean end = false;
 
     private Synconf() throws IOException
     {
-        setupSymbolicLink();
-        var configPath = Path.of("config.yml");
-        var config = Configs.loadConfig(configPath, Config.class);
-        Configs.saveConfig(configPath, config);
+        logger = new KLogger("synconf", null, Level.INFO, OsUtil.getLogPath().toFile());
+        logger.enable();
 
-        while (true) {
-            timer();
+        logger.info("start synconf");
+        var configPath = Path.of("config.yml");
+        config = Configs.loadConfig(configPath, Config.class);
+        Configs.saveConfig(configPath, config);
+        executorService = Executors.newCachedThreadPool();
+
+        executorService.execute(this::setupSymbolicLink);
+        executorService.execute(() -> {
             try {
-                Thread.sleep(1000 * 60 * config.loopWait());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                sync();
+            } catch (Exception e) {
+                logger.warning(e);
+                end();
             }
+        });
+
+        try {
+            var timeout = executorService.awaitTermination(5, TimeUnit.MINUTES);
+            if (timeout) {
+                logger.warning("services timeout");
+                end();
+            }
+        } catch (InterruptedException e) {
+            logger.warning(e);
+            end();
         }
+        if (isEnd()) return;
+
+        executorService.execute(this::timer);
     }
 
     private void timer()
@@ -39,11 +67,47 @@ public class Synconf
         try {
             sync();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warning(e);
+        }
+
+        synchronized (this) {
+            try {
+                wait(1000 * 60 * config.loopWait());
+            } catch (InterruptedException e) {
+                logger.warning(e);
+            }
+            if (isEnd()) return;
+        }
+        executorService.execute(this::timer);
+    }
+
+    public void end()
+    {
+        synchronized (this) {
+            end = true;
+            notifyAll();
+        }
+        logger.disable();
+
+        executorService.shutdown();
+        try {
+            var timeout = executorService.awaitTermination(5, TimeUnit.MINUTES);
+            if (timeout) {
+                logger.warning("services timeout");
+            }
+        } catch (InterruptedException e) {
+            logger.warning(e);
         }
     }
 
-    public void sync() throws Exception
+    public void resetTimer()
+    {
+        synchronized (this) {
+            notifyAll();
+        }
+    }
+
+    public synchronized void sync() throws Exception
     {
         if (!CommandUtil.isCommandExist("git")) throw new Exception("command not found");
         CommandUtil.execCommand("git", "add", "-u");
@@ -55,8 +119,9 @@ public class Synconf
         CommandUtil.execCommand("git", "commit", "-m", "marge");
     }
 
-    public void setupSymbolicLink() throws IOException
+    public void setupSymbolicLink()
     {
+        logger.info("set up symbol link...");
         try {
             var hostname = InetAddress.getLocalHost().getHostName();
             var configPath = Path.of("hosts", hostname + ".yml");
@@ -72,9 +137,17 @@ public class Synconf
 
                 Files.createSymbolicLink(repoFile.toPath(), absoluteFile.toPath());
             }
-        } catch (UnknownHostException e) {
-            throw new IOException(e);
+        } catch (IOException e) {
+            logger.warning(e);
+            end();
+            return;
         }
+        logger.info("set upped symbol link");
+    }
+
+    public synchronized boolean isEnd()
+    {
+        return end;
     }
 
     public static Synconf getInstance()
