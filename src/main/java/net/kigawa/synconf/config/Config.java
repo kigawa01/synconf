@@ -1,5 +1,5 @@
 package net.kigawa.synconf.config;
 
-public record Config(Long loopWait)
+public record Config(long loopWait,int port)
 {
 }

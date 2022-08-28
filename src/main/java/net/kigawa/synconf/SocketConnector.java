@@ -24,6 +24,7 @@ public class SocketConnector
         }
 
         executorService.execute(this::waitConnect);
+        logger.info("listen on " + port);
     }
 
     private void waitConnect()
@@ -68,8 +69,10 @@ public class SocketConnector
             String line = reader.readLine();
             if (line == null) return;
 
-            switch (line){
-                default -> {}
+            switch (line) {
+                case "end" -> Synconf.getInstance().end();
+                default -> {
+                }
             }
 
         } catch (IOException e) {
@@ -87,5 +90,6 @@ public class SocketConnector
         } catch (IOException e) {
             logger.warning(e);
         }
+        logger.info("port closed");
     }
 }

@@ -24,6 +24,7 @@ public class Synconf
     public final ExecutorService executorService;
     public final Config config;
     public final KLogger logger;
+    private final SocketConnector socketConnector;
     private boolean end = false;
 
     private Synconf() throws IOException
@@ -36,6 +37,7 @@ public class Synconf
         config = Configs.loadConfig(configPath, Config.class);
         Configs.saveConfig(configPath, config);
         executorService = Executors.newCachedThreadPool();
+        socketConnector = new SocketConnector(config.port(), logger, executorService);
 
         executorService.execute(this::setupSymbolicLink);
         executorService.execute(() -> {
@@ -87,7 +89,7 @@ public class Synconf
             end = true;
             notifyAll();
         }
-        logger.disable();
+        socketConnector.end();
 
         executorService.shutdown();
         try {
@@ -98,6 +100,7 @@ public class Synconf
         } catch (InterruptedException e) {
             logger.warning(e);
         }
+        logger.disable();
     }
 
     public void resetTimer()
