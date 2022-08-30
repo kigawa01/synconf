@@ -66,10 +66,23 @@ public class Synconf
 
     private void timer()
     {
+        executorService.execute(() -> {
+            try {
+                sync();
+            } catch (Exception e) {
+                logger.warning(e);
+            }
+        });
+
         try {
-            sync();
-        } catch (Exception e) {
+            var timeout = executorService.awaitTermination(5, TimeUnit.MINUTES);
+            if (timeout) {
+                logger.warning("services timeout");
+                end();
+            }
+        } catch (InterruptedException e) {
             logger.warning(e);
+            end();
         }
 
         synchronized (this) {
@@ -137,6 +150,7 @@ public class Synconf
                 if (absoluteFile.exists()) continue;
 
                 var repoFile = KutilFile.getFile(reposFolder, paths.getKey());
+                repoFile.mkdirs();
 
                 Files.createSymbolicLink(repoFile.toPath(), absoluteFile.toPath());
             }

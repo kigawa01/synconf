@@ -4,10 +4,12 @@ use std::env;
 use once_cell::sync::Lazy;
 
 use crate::install::command_install;
+use crate::service::start;
 
 mod install;
 mod errors;
 mod config;
+mod service;
 
 static COMMANDS: Lazy<HashMap<&str, Command>> = Lazy::new(|| {
     let mut commands: HashMap<&str, Command> = HashMap::new();
@@ -20,6 +22,16 @@ static COMMANDS: Lazy<HashMap<&str, Command>> = Lazy::new(|| {
         name: "install",
         func: command_install,
         description: "install synconf",
+    });
+    commands.insert("start", Command {
+        name: "start",
+        func: start,
+        description: "start service",
+    });
+    commands.insert("stop", Command {
+        name: "stop",
+        func: start,
+        description: "stop service",
     });
     return commands;
 });

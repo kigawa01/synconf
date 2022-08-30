@@ -33,6 +33,12 @@ impl PrintErr {
         messages.push(message.to_string());
         return PrintErr::from_messages_errors(messages, errors);
     }
+    pub fn from_error<T>(err: Box<dyn error::Error>) -> Result<T, Error> {
+        let messages = Vec::new();
+        let mut errors = Vec::new();
+        errors.push(err);
+        return PrintErr::from_messages_errors(messages, errors);
+    }
 }
 
 impl Error {
