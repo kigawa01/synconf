@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <properties>
+        <java.version>17</java.version>
+        <name>synconf</name>
+        <description>sync hostConfig to git</description>
+        <url>https://github.com/kigawa01/synconf</url>
+        <version>1.0</version>
+
+
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+    </properties>
+
+    <name>${name}</name>
+    <description>${description}</description>
+    <url>${url}</url>
+
+    <groupId>net.kigawa</groupId>
+    <artifactId>${name}</artifactId>
+    <version>${version}</version>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://www.opensource.org/licenses/mit-license.php</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>net.kigawa</id>
+            <name>kigawa</name>
+            <email>kigawa.8390@gmail.com</email>
+            <organization>individual</organization>
+            <organizationUrl>https://github.com/kigawa01/</organizationUrl>
+        </developer>
+    </developers>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.30</version>
+        </dependency>
+        <dependency>
+            <groupId>net.kigawa.kutil</groupId>
+            <artifactId>kutil</artifactId>
+            <version>2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>net.kigawa.kutil</groupId>
+            <artifactId>log</artifactId>
+            <version>2.0</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${name}</finalName>
+    </build>
+</project>
