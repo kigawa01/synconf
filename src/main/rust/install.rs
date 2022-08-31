@@ -1,10 +1,12 @@
 use std::env::current_exe;
-use std::fs::{copy, File};
+use std::fs::{copy, File, remove_file};
+use std::future::Future;
 use std::io::{stdin, stdout, Write};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use crate::errors::{Error, PrintErr};
+use crate::JAR_URL;
 
 pub fn command_install() {
     println!("install synconf...");
@@ -181,6 +183,68 @@ fn git_clone(url: &str) -> Result<(), Error> {
         }
     }
     return Ok(());
+}
+
+
+#[cfg(not(target_os = "linux"))]
+fn copy_jar_os() -> Result<(), Error> {
+    return PrintErr::from_message("non-linux is not supported");
+}
+
+fn copy_jar(targetPath: &str) {
+    let content = match reqwest::get(JAR_URL).await {
+        Ok(content) => { content }
+        Err(e) => {
+            PrintErr::from_message_error::<()>("could not get content", Box::from(e));
+            return;
+        }
+    };
+    let bytes = match content.bytes().await {
+        Ok(bytes) => { bytes }
+        Err(e) => {
+            PrintErr::from_message_error::<()>("could not get bytes", Box::from(e));
+            return;
+        }
+    };
+    let path = Path::new(targetPath);
+
+    if path.exists() {
+        match remove_file(path) {
+            Ok(_) => {}
+            Err(e) => {
+                PrintErr::from_message_error("could not remove old file", Box::from(e));
+                return;
+            }
+        };
+    }
+
+    let mut file = match File::create(path) {
+        Ok(file) => { file }
+        Err(e) => {
+            PrintErr::from_message_error("could not create file", Box::from(e));
+            return;
+        }
+    };
+
+    match file.write_all(&bytes) {
+        Ok(_) => {}
+        Err(e) => {
+            PrintErr::from_message_error("could not write file", Box::from(e));
+            return;
+        }
+    }
+    match file.flush() {
+        Ok(_) => {}
+        Err(e) => {
+            PrintErr::from_message_error("could not flash file", Box::from(e));
+            return;
+        }
+    }
+}
+
+#[cfg(target_os = "linux")]
+fn copy_jar_os() -> Result<(), Error> {
+    return copy_jar("/var/synconf/synconf.jar");
 }
 
 #[cfg(target_os = "linux")]
