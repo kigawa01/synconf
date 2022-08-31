@@ -1,9 +1,8 @@
 use std::env::current_exe;
 use std::fs::{copy, File, remove_file};
-use std::future::Future;
 use std::io::{stdin, stdout, Write};
 use std::path::{Path, PathBuf};
-use std::process::Command;
+use std::process::{ChildStdout, Command};
 
 use crate::errors::{Error, PrintErr};
 use crate::JAR_URL;
@@ -59,12 +58,26 @@ fn install_java_linux() -> Result<(), Error> {
         Ok(_) => { return Ok(()); }
         Err(_) => {}
     }
-    return match Command::new("apt").arg("install").arg("default-jdk-headless").spawn() {
-        Ok(_) => { Ok(()) }
+    let child = match Command::new("apt").arg("install").arg("default-jdk-headless").spawn() {
+        Ok(child) => { child }
         Err(e) => {
-            PrintErr::from_message_error("could not install java", Box::from(e))
+            return PrintEr::from_message_error("could not install java", Box::from(e));
         }
     };
+
+    let mut child_in = match child.stdin {
+        None => { return PrintErr::from_message("cold not get input"); }
+        Some(child_in) => { child_in }
+    };
+
+    match child_in.write_all(b"\n") {
+        Ok(_) => {}
+        Err(e) => {
+            return PrintErr::from_message_error("could not out to command", Box::from(e));
+        }
+    }
+
+    return Ok(());
 }
 
 #[cfg(not(target_os = "linux"))]
@@ -137,12 +150,25 @@ fn install_git_os() -> Result<(), Error> {
 }
 
 fn install_git_linux() -> Result<(), Error> {
-    let mut apt = Command::new("apt");
-    apt.arg("install").arg("git");
-    if let Ok(_) = apt.spawn() {
-        return Ok(());
+    let child = match Command::new("apt").arg("install").arg("git").spawn() {
+        Ok(child) => { child }
+        Err(e) => {
+            return PrintEr::from_message_error("could not install git", Box::from(e));
+        }
+    };
+
+    let mut child_in = match child.stdin {
+        None => { return PrintErr::from_message("cold not get input"); }
+        Some(child_in) => { child_in }
+    };
+
+    match child_in.write_all(b"\n") {
+        Ok(_) => {}
+        Err(e) => {
+            return PrintErr::from_message_error("could not out to command", Box::from(e));
+        }
     }
-    return PrintErr::from_message("could not install git");
+    return Ok(());
 }
 
 fn read_url() -> Result<String, Error> {
@@ -159,7 +185,7 @@ fn read_url() -> Result<String, Error> {
 
 fn git_clone(url: &str) -> Result<(), Error> {
     let mut clone = Command::new("git");
-    clone.arg("clone").arg(url).current_dir("/var/synconf");
+    clone.arg("clone").arg(url).current_dir("/var/");
 
     match clone.spawn() {
         Ok(_) => {}
