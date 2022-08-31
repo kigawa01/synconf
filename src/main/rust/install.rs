@@ -29,7 +29,38 @@ pub fn command_install() {
         }
     }
 
+    match install_java_os() {
+        Ok(_) => {}
+        Err(_) => {
+            return;
+        }
+    }
+
     println!("installed synconf");
+}
+
+#[cfg(not(target_os = "linux"))]
+fn install_java_os() -> Result<(), Error> {
+    return PrintErr::from_message("non-linux is not supported");
+}
+
+#[cfg(target_os = "linux")]
+fn install_java_os() {
+    install_java_linux()
+}
+
+
+fn install_java_linux() -> Result<(), Error> {
+    match Command::new("java").arg("-version").spawn() {
+        Ok(_) => { return Ok(()); }
+        Err(_) => {}
+    }
+    return match Command::new("apt").arg("install").arg("default-jdk-headless").spawn() {
+        Ok(_) => { Ok(()) }
+        Err(e) => {
+            PrintErr::from_message_error("could not install java", Box::from(e))
+        }
+    };
 }
 
 #[cfg(not(target_os = "linux"))]
