@@ -38,6 +38,8 @@ pub fn command_install() {
         }
     }
 
+    copy_jar_os();
+
     println!("installed synconf");
 }
 
@@ -185,35 +187,31 @@ fn git_clone(url: &str) -> Result<(), Error> {
     return Ok(());
 }
 
-
 #[cfg(not(target_os = "linux"))]
-fn copy_jar_os() -> Result<(), Error> {
+async fn copy_jar_os() -> Result<(), Error> {
     return PrintErr::from_message("non-linux is not supported");
 }
 
-fn copy_jar(targetPath: &str) {
+async fn copy_jar(target_path: &str) -> Result<(), Error> {
     let content = match reqwest::get(JAR_URL).await {
         Ok(content) => { content }
-        Err(e) => {
-            PrintErr::from_message_error::<()>("could not get content", Box::from(e));
-            return;
+        Err(_) => {
+            return PrintErr::from_message("could not get content");
         }
     };
     let bytes = match content.bytes().await {
         Ok(bytes) => { bytes }
-        Err(e) => {
-            PrintErr::from_message_error::<()>("could not get bytes", Box::from(e));
-            return;
+        Err(_) => {
+            return PrintErr::from_message("could not get bytes");
         }
     };
-    let path = Path::new(targetPath);
+    let path = Path::new(target_path);
 
     if path.exists() {
         match remove_file(path) {
             Ok(_) => {}
             Err(e) => {
-                PrintErr::from_message_error("could not remove old file", Box::from(e));
-                return;
+                return PrintErr::from_message_error("could not remove old file", Box::from(e));
             }
         };
     }
@@ -221,30 +219,28 @@ fn copy_jar(targetPath: &str) {
     let mut file = match File::create(path) {
         Ok(file) => { file }
         Err(e) => {
-            PrintErr::from_message_error("could not create file", Box::from(e));
-            return;
+            return PrintErr::from_message_error("could not create file", Box::from(e));
         }
     };
 
     match file.write_all(&bytes) {
         Ok(_) => {}
         Err(e) => {
-            PrintErr::from_message_error("could not write file", Box::from(e));
-            return;
+            return PrintErr::from_message_error("could not write file", Box::from(e));
         }
     }
     match file.flush() {
         Ok(_) => {}
         Err(e) => {
-            PrintErr::from_message_error("could not flash file", Box::from(e));
-            return;
+            return PrintErr::from_message_error("could not flash file", Box::from(e));
         }
     }
+    return Ok(());
 }
 
 #[cfg(target_os = "linux")]
-fn copy_jar_os() -> Result<(), Error> {
-    return copy_jar("/var/synconf/synconf.jar");
+async fn copy_jar_os() -> Result<(), Error> {
+    return copy_jar("/var/synconf/synconf.jar").await;
 }
 
 #[cfg(target_os = "linux")]

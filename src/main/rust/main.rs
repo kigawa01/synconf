@@ -10,7 +10,7 @@ mod install;
 mod errors;
 mod service;
 
-pub const JAR_URL: &str ="";
+pub const JAR_URL: &str ="https://github.com/kigawa01/synconf/releases/download/1.0-SNAPSHOT/synconf.jar";
 
 static COMMANDS: Lazy<HashMap<&str, Command>> = Lazy::new(|| {
     let mut commands: HashMap<&str, Command> = HashMap::new();
