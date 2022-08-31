@@ -16,6 +16,7 @@ pub fn command_install() {
             return;
         }
     }
+
     let url = match read_url() {
         Ok(str) => { str }
         Err(_) => {
@@ -37,7 +38,12 @@ pub fn command_install() {
         }
     }
 
-    copy_jar_os();
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .unwrap();
+
+    runtime.block_on(async { copy_jar_os().await }).expect("cold not copy jar file");
 
     println!("installed synconf");
 }
@@ -58,25 +64,13 @@ fn install_java_linux() -> Result<(), Error> {
         Ok(_) => { return Ok(()); }
         Err(_) => {}
     }
-    let child = match Command::new("apt").arg("install").arg("default-jdk-headless").spawn() {
+    let child = match Command::new("apt").arg("install").arg("default-jdk-headless")
+        .arg("-y").spawn() {
         Ok(child) => { child }
         Err(e) => {
-            return PrintEr::from_message_error("could not install java", Box::from(e));
+            return PrintErr::from_message_error("could not install java", Box::from(e));
         }
     };
-
-    let mut child_in = match child.stdin {
-        None => { return PrintErr::from_message("cold not get input"); }
-        Some(child_in) => { child_in }
-    };
-
-    match child_in.write_all(b"\n") {
-        Ok(_) => {}
-        Err(e) => {
-            return PrintErr::from_message_error("could not out to command", Box::from(e));
-        }
-    }
-
     return Ok(());
 }
 
@@ -150,24 +144,12 @@ fn install_git_os() -> Result<(), Error> {
 }
 
 fn install_git_linux() -> Result<(), Error> {
-    let child = match Command::new("apt").arg("install").arg("git").spawn() {
+    let child = match Command::new("apt").arg("install").arg("git").arg("-y").spawn() {
         Ok(child) => { child }
         Err(e) => {
-            return PrintEr::from_message_error("could not install git", Box::from(e));
+            return PrintErr::from_message_error("could not install git", Box::from(e));
         }
     };
-
-    let mut child_in = match child.stdin {
-        None => { return PrintErr::from_message("cold not get input"); }
-        Some(child_in) => { child_in }
-    };
-
-    match child_in.write_all(b"\n") {
-        Ok(_) => {}
-        Err(e) => {
-            return PrintErr::from_message_error("could not out to command", Box::from(e));
-        }
-    }
     return Ok(());
 }
 
@@ -185,7 +167,7 @@ fn read_url() -> Result<String, Error> {
 
 fn git_clone(url: &str) -> Result<(), Error> {
     let mut clone = Command::new("git");
-    clone.arg("clone").arg(url).current_dir("/var/");
+    clone.arg("clone").arg(url).arg("./synconf").current_dir("/var/");
 
     match clone.spawn() {
         Ok(_) => {}
@@ -219,6 +201,7 @@ async fn copy_jar_os() -> Result<(), Error> {
 }
 
 async fn copy_jar(target_path: &str) -> Result<(), Error> {
+    println!("copy jar...");
     let content = match reqwest::get(JAR_URL).await {
         Ok(content) => { content }
         Err(_) => {
@@ -261,6 +244,7 @@ async fn copy_jar(target_path: &str) -> Result<(), Error> {
             return PrintErr::from_message_error("could not flash file", Box::from(e));
         }
     }
+    println!("coped jar");
     return Ok(());
 }
 
