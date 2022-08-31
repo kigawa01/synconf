@@ -4,12 +4,13 @@ use std::env;
 use once_cell::sync::Lazy;
 
 use crate::install::command_install;
-use crate::service::start;
+use crate::service::{start, stop};
 
 mod install;
 mod errors;
-mod config;
 mod service;
+
+pub const JAR_URL: &str ="";
 
 static COMMANDS: Lazy<HashMap<&str, Command>> = Lazy::new(|| {
     let mut commands: HashMap<&str, Command> = HashMap::new();
@@ -30,7 +31,7 @@ static COMMANDS: Lazy<HashMap<&str, Command>> = Lazy::new(|| {
     });
     commands.insert("stop", Command {
         name: "stop",
-        func: start,
+        func: stop,
         description: "stop service",
     });
     return commands;

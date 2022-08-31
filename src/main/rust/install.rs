@@ -45,7 +45,7 @@ fn install_java_os() -> Result<(), Error> {
 }
 
 #[cfg(target_os = "linux")]
-fn install_java_os() {
+fn install_java_os() -> Result<(), Error> {
     install_java_linux()
 }
 
@@ -69,7 +69,7 @@ fn create_service_os() -> Result<(), Error> {
 }
 
 #[cfg(target_os = "linux")]
-fn create_service_os() {
+fn create_service_os() -> Result<(), Error> {
     create_service_linux()
 }
 
@@ -114,7 +114,7 @@ WantedBy=multi-user.target") {
         Ok(_) => {}
         Err(_) => { return PrintErr::from_message("could not enable synconf"); }
     }
-    match Command::new("systemctl").arg("start").args("synconf").spawn() {
+    match Command::new("systemctl").arg("start").arg("synconf").spawn() {
         Ok(_) => {}
         Err(_) => { return PrintErr::from_message("could not start synconf"); }
     }
@@ -133,7 +133,8 @@ fn install_git_os() -> Result<(), Error> {
 }
 
 fn install_git_linux() -> Result<(), Error> {
-    let apt = Command::new("apt").arg("install").arg("git");
+    let mut apt = Command::new("apt");
+    apt.arg("install").arg("git");
     if let Ok(_) = apt.spawn() {
         return Ok(());
     }
@@ -153,7 +154,8 @@ fn read_url() -> Result<String, Error> {
 }
 
 fn git_clone(url: &str) -> Result<(), Error> {
-    let clone = Command::new("git").arg("clone").arg(url).current_dir("/var/synconf");
+    let mut clone = Command::new("git");
+    clone.arg("clone").arg(url).current_dir("/var/synconf");
 
     match clone.spawn() {
         Ok(_) => {}
