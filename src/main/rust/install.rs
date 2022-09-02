@@ -61,12 +61,17 @@ fn install_java_os() -> Result<(), Error> {
 
 fn install_java_linux() -> Result<(), Error> {
     match Command::new("java").arg("-version").spawn() {
-        Ok(_) => { return Ok(()); }
+        Ok(mut child) => {
+            let _ = child.wait();
+            return Ok(());
+        }
         Err(_) => {}
     }
-    let child = match Command::new("apt").arg("install").arg("default-jdk-headless")
+    match Command::new("apt").arg("install").arg("openjdk-17-jre-headless")
         .arg("-y").spawn() {
-        Ok(child) => { child }
+        Ok(mut child) => {
+            let _ = child.wait();
+        }
         Err(e) => {
             return PrintErr::from_message_error("could not install java", Box::from(e));
         }
@@ -122,11 +127,15 @@ WantedBy=multi-user.target") {
         }
     }
     match Command::new("systemctl").arg("enable").arg("synconf").spawn() {
-        Ok(_) => {}
+        Ok(mut child) => {
+            let _ = child.wait();
+        }
         Err(_) => { return PrintErr::from_message("could not enable synconf"); }
-    }
+    };
     match Command::new("systemctl").arg("start").arg("synconf").spawn() {
-        Ok(_) => {}
+        Ok(mut child) => {
+            let _ = child.wait();
+        }
         Err(_) => { return PrintErr::from_message("could not start synconf"); }
     }
 
@@ -144,8 +153,10 @@ fn install_git_os() -> Result<(), Error> {
 }
 
 fn install_git_linux() -> Result<(), Error> {
-    let child = match Command::new("apt").arg("install").arg("git").arg("-y").spawn() {
-        Ok(child) => { child }
+    match Command::new("apt").arg("install").arg("git").arg("-y").spawn() {
+        Ok(mut child) => {
+            let _ = child.wait();
+        }
         Err(e) => {
             return PrintErr::from_message_error("could not install git", Box::from(e));
         }
@@ -170,7 +181,9 @@ fn git_clone(url: &str) -> Result<(), Error> {
     clone.arg("clone").arg(url).arg("./synconf").current_dir("/var/");
 
     match clone.spawn() {
-        Ok(_) => {}
+        Ok(mut child) => {
+            let _ = child.wait();
+        }
         Err(_) => {
             match install_git_os() {
                 Ok(_) => {}
@@ -182,7 +195,9 @@ fn git_clone(url: &str) -> Result<(), Error> {
                 }
             }
             match clone.spawn() {
-                Ok(_) => {}
+                Ok(mut child) => {
+                    let _ = child.wait();
+                }
                 Err(e) => {
                     return PrintErr::from_message_error(
                         "cold not clone",
@@ -190,6 +205,24 @@ fn git_clone(url: &str) -> Result<(), Error> {
                     );
                 }
             }
+        }
+    }
+    match Command::new("git").arg("config").arg("credential.helper").arg("store")
+        .current_dir("/var/synconf").spawn() {
+        Ok(mut child) => {
+            let _ = child.wait();
+        }
+        Err(e) => {
+            return PrintErr::from_message_error("cold not set git config", Box::from(e));
+        }
+    }
+    match Command::new("git").arg("fetch")
+        .current_dir("/var/synconf").spawn() {
+        Ok(mut child) => {
+            let _ = child.wait();
+        }
+        Err(e) => {
+            return PrintErr::from_message_error("cold not set fetch", Box::from(e));
         }
     }
     return Ok(());

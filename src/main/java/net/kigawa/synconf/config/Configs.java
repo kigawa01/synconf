@@ -9,6 +9,11 @@ public class Configs
 {
     public static <T> T loadConfig(Path path, Class<T> configClass) throws IOException
     {
+        var file = path.toFile();
+        if (!file.exists()) {
+            file.delete();
+            file.createNewFile();
+        }
         try (var reader = new BufferedReader(new FileReader(path.toFile()))) {
             return new Yaml().loadAs(reader, configClass);
         } catch (IOException e) {

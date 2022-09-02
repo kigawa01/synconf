@@ -29,7 +29,7 @@ public class Synconf
 
     private Synconf() throws IOException
     {
-        logger = new KLogger("synconf", null, Level.INFO, OsUtil.getLogPath().toFile());
+        logger = new KLogger("synconf", null, Level.INFO, KutilFile.getFile(OsUtil.getLogPath().toFile(), "synconf"));
         logger.enable();
 
         logger.info("start synconf");
@@ -37,7 +37,6 @@ public class Synconf
         config = Configs.loadConfig(configPath, Config.class);
         Configs.saveConfig(configPath, config);
         executorService = Executors.newCachedThreadPool();
-        socketConnector = new SocketConnector(config.port(), logger, executorService);
 
         executorService.execute(this::setupSymbolicLink);
         executorService.execute(() -> {
@@ -48,6 +47,8 @@ public class Synconf
                 end();
             }
         });
+
+        socketConnector = new SocketConnector(config.port(), logger, executorService);
 
         try {
             var timeout = executorService.awaitTermination(5, TimeUnit.MINUTES);
