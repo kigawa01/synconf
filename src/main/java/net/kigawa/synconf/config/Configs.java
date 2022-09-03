@@ -21,8 +21,8 @@ public class Configs
     {
         var file = path.toFile();
         if (!file.exists()) {
+            file.mkdirs();
             file.delete();
-            file.getParentFile().mkdirs();
             file.createNewFile();
         }
         try (var reader = new BufferedReader(new FileReader(path.toFile()))) {
