@@ -1,17 +1,24 @@
 package net.kigawa.synconf.config;
 
-import org.yaml.snakeyaml.Yaml;
-
-import java.io.*;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-public record HostConfig(Map<String, String> repoPathToAbsolutePath)
+public final class HostConfig
 {
+    private Map<String, String> repoPathToAbsolutePath;
+
     public HostConfig()
     {
-        this(new HashMap<>());
+        this.repoPathToAbsolutePath = new HashMap<>();
     }
 
+    public Map<String, String> getRepoPathToAbsolutePath()
+    {
+        return repoPathToAbsolutePath;
+    }
+
+    public void setRepoPathToAbsolutePath(Map<String, String> repoPathToAbsolutePath)
+    {
+        this.repoPathToAbsolutePath = repoPathToAbsolutePath;
+    }
 }

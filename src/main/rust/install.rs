@@ -178,7 +178,7 @@ fn read_url() -> Result<String, Error> {
 
 fn git_clone(url: &str) -> Result<(), Error> {
     let mut clone = Command::new("git");
-    clone.arg("clone").arg(url).arg("./synconf").current_dir("/var/");
+    clone.arg("clone").arg(url.replace("\n", "")).arg("./synconf").current_dir("/var/");
 
     match clone.spawn() {
         Ok(mut child) => {

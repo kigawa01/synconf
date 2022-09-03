@@ -29,18 +29,22 @@ public class SocketConnector
 
     private void waitConnect()
     {
+        logger.info("listen socket");
         try {
             Socket socket = serverSocket.accept();
 
-            executorService.execute(() -> readSocket(socket));
+            readSocket(socket);
         } catch (IOException e) {
             logger.warning(e);
             Synconf.getInstance().end();
         }
 
-        if (Synconf.getInstance().isEnd()) return;
+        if (Synconf.getInstance().isEnd()) {
+            logger.info("close socket");
+            return;
+        }
 
-        executorService.execute(this::waitConnect);
+        waitConnect();
     }
 
     private void readSocket(Socket socket)

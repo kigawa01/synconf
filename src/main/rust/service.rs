@@ -9,7 +9,7 @@ pub fn start() {
     command.arg("-jar").arg("synconf.jar")
         .current_dir("/var/synconf");
     match command.spawn() {
-        Ok(_) => {}
+        Ok(mut child) => { let _ = child.wait(); }
         Err(e) => {
             PrintErr::from_message_error::<()>("could not start synconf", Box::new(e));
         }
